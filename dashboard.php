@@ -96,9 +96,8 @@ $last_name = isset($responseProfile["lastName"]) ? $responseProfile["lastName"] 
         .justified {
             background-color: green; /* Carré vert pour les absences justifiées */
         }
-        /* Toutes les absences, justifiées ou non, sont maintenant en vert */
         .unjustified {
-            background-color: green; /* Carré vert pour les absences non justifiées aussi */
+            background-color: red; /* Carré rouge pour les absences non justifiées */
         }
         .error {
             color: red;
@@ -108,45 +107,47 @@ $last_name = isset($responseProfile["lastName"]) ? $responseProfile["lastName"] 
 </head>
 <body>
 
-    <div class="dashboard-container">
-        <h1>Bienvenue, <?= htmlspecialchars($first_name . ' ' . $last_name, ENT_QUOTES, 'UTF-8') ?></h1>
+<div class="dashboard-container">
+    <h1>Bienvenue, <?= htmlspecialchars($first_name . ' ' . $last_name, ENT_QUOTES, 'UTF-8') ?></h1>
 
-        <div class="nav-links">
-            <a href="logout.php">Se déconnecter</a>
-        </div>
+    <div class="nav-links">
+        <a href="logout.php">Se déconnecter</a>
+    </div>
 
-        <section class="absences">
-            <h2>Vos Absences</h2>
-            <table>
-                <thead>
+    <section class="absences">
+        <h2>Vos Absences</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Justifiée</th>
+                <th>Commentaire</th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php if (empty($absences)): ?>
+                <tr>
+                    <td colspan="3">Aucune absence trouvée.</td>
+                </tr>
+            <?php else: ?>
+                <?php foreach ($absences as $absence): ?>
                     <tr>
-                        <th>Date</th>
-                        <th>Justifiée</th>
-                        <th>Commentaire</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (empty($absences)): ?>
-                        <tr>
-                            <td colspan="3">Aucune absence trouvée.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($absences as $absence): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($absence['absenceDate'], ENT_QUOTES, 'UTF-8') ?></td>
-                                <td>
-                                    <span class="absence-status <?= 'unjustified' ?>"> <!-- Toutes les absences sont traitées comme 'unjustified' -->
+                        <td><?= htmlspecialchars($absence['absenceDate'], ENT_QUOTES, 'UTF-8') ?></td>
+                        <td>
+                                    <span class="absence-status <?= $absence['status'] === 'justifiée' ? 'justified' : 'unjustified' ?>">
                                         <?= htmlspecialchars($absence['status'], ENT_QUOTES, 'UTF-8') ?>
                                     </span>
-                                </td>
-                                <td><?= htmlspecialchars($absence['reason'], ENT_QUOTES, 'UTF-8') ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
-        </section>
-    </div>
+                        </td>
+                        <td>
+                            <?= htmlspecialchars($absence['reason'] ?? 'Pas de commentaire', ENT_QUOTES, 'UTF-8') ?>
+                        </td>
+                    </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
+            </tbody>
+        </table>
+    </section>
+</div>
 
 </body>
 </html>
